@@ -3,6 +3,7 @@ package com.punagalabs.spring.security.demo.security
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
@@ -17,12 +18,13 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)// to enable method level role and permission auth
 class AppSecurityConfig : WebSecurityConfigurerAdapter() {
 
     override fun configure(http: HttpSecurity?) {
         http?.csrf()?.disable()
                 ?.authorizeRequests()?.antMatchers("/")?.permitAll()
-//                ?.antMatchers("/api/users/**")?.hasRole(UserRole.USER.name)
+//                ?.antMatchers("/api/users/**")?.hasRole(UserRole.USER.name) // role base auth
                 ?.antMatchers(HttpMethod.DELETE, "/api/products/**")?.hasAuthority(UserPermission.PRODUCT_WRITE.permission)
                 ?.antMatchers(HttpMethod.POST, "/api/products/**")?.hasAuthority(UserPermission.PRODUCT_WRITE.permission)
                 ?.antMatchers(HttpMethod.PUT, "/api/products/**")?.hasAuthority(UserPermission.PRODUCT_WRITE.permission)
